@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 
 const cookieOptions = {
   maxAge: 24 * 60 * 60 * 1000,
-  httpOnly: true,
+  httpOnly: false,
   secure: false,
 };
 const jwtOptions = {
@@ -13,9 +13,9 @@ const jwtOptions = {
 
 export function sendResponse(res: Response, user: Document): void {
   const token = jwt.sign({ id: user.id }, 'this-is-my-secret', jwtOptions);
-  if (process.env.NODE_ENV === 'production') {
-    cookieOptions.secure = true;
-  }
+  // if (process.env.NODE_ENV === 'production') {
+  //   cookieOptions.secure = true;
+  // }
   res.cookie('jwt', token, cookieOptions);
   res.status(200).json({
     status: 'success',
