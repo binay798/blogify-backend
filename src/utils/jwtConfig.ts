@@ -13,9 +13,11 @@ const jwtOptions = {
 
 export function sendResponse(res: Response, user: Document): void {
   const token = jwt.sign({ id: user.id }, 'this-is-my-secret', jwtOptions);
-  // if (process.env.NODE_ENV === 'production') {
-  //   cookieOptions.secure = true;
-  // }
+  if (process.env.NODE_ENV === 'production') {
+    cookieOptions.secure = true;
+    cookieOptions.httpOnly = true;
+  }
+  console.log(cookieOptions);
   res.cookie('jwt', token, cookieOptions);
   res.status(200).json({
     status: 'success',
