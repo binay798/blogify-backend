@@ -43,7 +43,7 @@ export const createImage = catchAsync(
         console.log(result);
         if (!result) throw new Error('Not uploaded');
 
-        url = result.url;
+        url = result.secure_url;
         public_id = result.public_id;
       }
     );
