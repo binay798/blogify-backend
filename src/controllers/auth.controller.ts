@@ -57,7 +57,12 @@ export const login = catchAsync(
 );
 
 export const logout = catchAsync(async (req: Request, res: Response) => {
-  res.cookie('jwt', '');
+  res.cookie('jwt', '', {
+    maxAge: 24 * 60 * 60 * 1000,
+    httpOnly: false,
+    secure: false,
+    sameSite: 'none' as 'none',
+  });
   res.status(200).json({
     status: 'success',
     token: '',

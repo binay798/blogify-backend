@@ -18,7 +18,6 @@ export function sendResponse(res: Response, user: Document): void {
     cookieOptions.secure = true;
     cookieOptions.httpOnly = true;
   }
-  console.log(cookieOptions);
   res.cookie('jwt', token, cookieOptions);
   res.status(200).json({
     status: 'success',
