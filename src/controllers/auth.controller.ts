@@ -5,7 +5,8 @@ import { catchAsync } from '../utils/catchAsync';
 import { sendResponse } from '../utils/jwtConfig';
 import { AppError } from './../utils/AppError';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { EmailConfig } from '../utils/emailConfig';
+import { EmailConfig } from '../services/EmailService/EmailConfig';
+import { WelcomeEmail } from '../services/EmailService/welcomeEmail';
 import { Group } from './../models/group.model';
 
 export interface UserRequest extends Request {
@@ -23,14 +24,20 @@ export const signup = catchAsync(
     const user = await User.create(req.body);
 
     // Send welcome email
-    const emailInstance = new EmailConfig(
-      process.env.EMAIL_USERNAME as string,
-      user.email,
-      {
-        subject: 'Welcome to our website',
-      }
-    );
-    emailInstance.welcomeEmail();
+    const emailData = {
+      to: user.email,
+      username: user.username,
+    };
+    const emailInstance = new EmailConfig(new WelcomeEmail(emailData));
+    await emailInstance.send();
+    // const emailInstance = new EmailConfig(
+    //   process.env.EMAIL_USERNAME as string,
+    //   user.email,
+    //   {
+    //     subject: 'Welcome to our website',
+    //   }
+    // );
+    // emailInstance.welcomeEmail();
 
     sendResponse(res, user);
   }
