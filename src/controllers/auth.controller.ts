@@ -7,6 +7,7 @@ import { AppError } from './../utils/AppError';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { EmailConfig } from '../services/EmailService/EmailConfig';
 import { WelcomeEmail } from '../services/EmailService/welcomeEmail';
+import { PasswordResetEmail } from '../services/EmailService/passwordResetEmail';
 import { Group } from './../models/group.model';
 
 export interface UserRequest extends Request {
@@ -30,14 +31,6 @@ export const signup = catchAsync(
     };
     const emailInstance = new EmailConfig(new WelcomeEmail(emailData));
     await emailInstance.send();
-    // const emailInstance = new EmailConfig(
-    //   process.env.EMAIL_USERNAME as string,
-    //   user.email,
-    //   {
-    //     subject: 'Welcome to our website',
-    //   }
-    // );
-    // emailInstance.welcomeEmail();
 
     sendResponse(res, user);
   }
@@ -104,6 +97,7 @@ export const forgotPassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     // GET THE EMAIL
     const { email } = req.body;
+    console.log(email);
     // CHECK FOR THE EXISTENCE OF USER
     const user = await User.findOne({ email });
     if (!user) return next(new AppError('User not found', 404));
@@ -112,15 +106,13 @@ export const forgotPassword = catchAsync(
     user.save({ validateBeforeSave: false });
     // SEND RESET URL TO THE EMAIL
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-    const emailInstance = new EmailConfig(
-      process.env.EMAIL_USERNAME as string,
-      email,
-      {
-        url: resetUrl,
-        subject: 'Reset your password',
-      }
-    );
-    await emailInstance.passwordResetEmail();
+    const emailData = {
+      to: user.email,
+      username: user.username,
+      message: resetUrl,
+    };
+    const emailInstance = new EmailConfig(new PasswordResetEmail(emailData));
+    await emailInstance.send();
 
     res.status(200).json({
       status: 'success',

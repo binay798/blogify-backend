@@ -18,7 +18,6 @@ router
 router.get('/count', userController.countUsers);
 router.get('/search/:name', userController.searchUser);
 
-router.get('/:id', userController.getUser);
 router
   .route('/update-pic')
   .patch(
@@ -29,4 +28,6 @@ router
   );
 
 router.get('/forgot-password', authController.forgotPassword);
+router.get('/:id', userController.getUser);
+
 router.post('/reset-password/:token', authController.resetPassword);
